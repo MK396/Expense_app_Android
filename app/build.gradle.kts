@@ -40,6 +40,9 @@ android {
 }
 
 dependencies {
+    """Dodanie w celu nawigacji między ekranami"""
+    implementation("androidx.navigation:navigation-compose:2.7.5")
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
