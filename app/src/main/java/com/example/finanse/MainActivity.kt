@@ -42,3 +42,12 @@ fun AppNavigation(navController: NavHostController) {
         composable("add_income") { AddIncomeScreen() }
         }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun MainActivityPreviev() {
+    FinanseTheme {
+        val navController = rememberNavController()
+        AppNavigation(navController)
+    }
+}
