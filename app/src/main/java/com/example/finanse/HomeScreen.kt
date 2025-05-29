@@ -76,6 +76,14 @@ fun HomeScreen(navController: NavController){
                     )
                 }
             }
+            Button(
+                onClick = {navController.navigate("add_expense")},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 30.dp, end = 30.dp)
+            ) {
+                Text("Dodaj")
+            }
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,16 +118,9 @@ fun HomeScreen(navController: NavController){
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Button(
-                            onClick = {navController.navigate("add_expense")},
+                            onClick = {navController.navigate("show_expense")},
                             modifier = Modifier
-                                .width(120.dp)
-                        ) {
-                            Text("Dodaj")
-                        }
-                        Button(
-                            onClick = {},
-                            modifier = Modifier
-                                .width(165.dp)
+                                .fillMaxWidth()
                         ) {
                             Text("Sprawdź wydatki")
                         }
@@ -160,16 +161,9 @@ fun HomeScreen(navController: NavController){
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Button(
-                            onClick = {navController.navigate("add_income")},
-                            modifier = Modifier
-                                .width(120.dp)
-                        ) {
-                            Text("Dodaj")
-                        }
-                        Button(
                             onClick = {},
                             modifier = Modifier
-                                .width(165.dp)
+                                .fillMaxWidth()
                         ) {
                             Text("Sprawdź wpłaty")
                         }

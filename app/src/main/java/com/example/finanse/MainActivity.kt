@@ -11,6 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -22,12 +24,16 @@ import androidx.navigation.compose.composable
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         enableEdgeToEdge()
         setContent {
             FinanseTheme {
                 val navController = rememberNavController()
+                val viewModel: MainViewModel = viewModel(
+                    factory = ViewModelProvider.AndroidViewModelFactory(application))
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
-                    AppNavigation(navController)
+                    AppNavigation(navController, viewModel)
                 }
             }
         }
@@ -35,19 +41,15 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(
+    navController: NavHostController,
+    viewModel: MainViewModel,
+) {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomeScreen(navController) }
-        composable("add_expense") { AddExpenseScreen() }
-        composable("add_income") { AddIncomeScreen() }
-        }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun MainActivityPreviev() {
-    FinanseTheme {
-        val navController = rememberNavController()
-        AppNavigation(navController)
+        composable("add_expense") { AddExpenseScreen(viewModel) }
+        composable("show_expense") { ExpenseScreen(viewModel) }
     }
 }
+
+
