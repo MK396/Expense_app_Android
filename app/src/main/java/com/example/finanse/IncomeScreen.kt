@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 
 @Composable
-fun ExpenseScreen(viewModel: MainViewModel) {
+fun IncomeScreen(viewModel: MainViewModel) {
     // Pobieramy dane jako State z Flow
     val expenses by viewModel.allExpenses.collectAsState(initial = emptyList())
 
@@ -50,7 +50,7 @@ fun ExpenseScreen(viewModel: MainViewModel) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Wydatki",
+                text = "Przychody",
                 style = TextStyle(
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Bold,
@@ -63,7 +63,7 @@ fun ExpenseScreen(viewModel: MainViewModel) {
         )
         LazyColumn(
         ) {
-            items(expenses.filter { it.type == "Wydatek" }) { expense ->
+            items(expenses.filter { it.type == "Przychód" }) { expense ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -78,12 +78,12 @@ fun ExpenseScreen(viewModel: MainViewModel) {
                     ) {
                         Column {
                             Text(
-                                    text = "${expense.date}",
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 18.sp
-                            )
-                            )
+                                text = "${expense.date}",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 18.sp
+                                )
+                                )
                             Text("${expense.name}")
                             Text("${expense.amount} zł")
                         }

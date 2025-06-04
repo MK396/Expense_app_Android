@@ -25,5 +25,7 @@ interface ExpenseDao {
     @Query("SELECT * FROM expense_table WHERE type = 'Przychód'")
     fun getIncome(): Flow<List<Expense>>
 
+    @Query("DELETE FROM expense_table")
+    suspend fun deleteAll()
 
 }

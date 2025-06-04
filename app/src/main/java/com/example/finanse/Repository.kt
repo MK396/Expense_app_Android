@@ -31,4 +31,8 @@ class Repository(context: Context): ExpenseDao {
     override fun getIncome(): Flow<List<Expense>> {
         return dao.getIncome()
     }
+
+    override suspend fun deleteAll() {
+        dao.deleteAll()
+    }
 }

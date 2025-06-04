@@ -11,11 +11,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,9 +40,31 @@ import androidx.navigation.NavController
 
 
 @Composable
-fun HomeScreen(navController: NavController){
-    Surface(modifier = Modifier.fillMaxSize()) {
-        Column() {
+fun HomeScreen(navController: NavController, viewModel: MainViewModel){
+
+    val balance by viewModel.balance.collectAsState(initial = 0.0)
+    val totalExpenses by viewModel.totalExpenses.collectAsState(initial = 0.0)
+    val totalIncome by viewModel.totalIncome.collectAsState(initial = 0.0)
+
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Główna") },
+                    label = { Text("Główna") },
+                    selected = true,
+                    onClick = {  }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Build, contentDescription = "Wykres") },
+                    label = { Text("Wykres") },
+                    selected = false,
+                    onClick = { navController.navigate("show_chart") }
+                )
+            }
+        }
+    ) { innerPadding ->
+        Column {
             Box(
                 modifier = Modifier
                     .height(60.dp)
@@ -69,7 +102,7 @@ fun HomeScreen(navController: NavController){
                         modifier = Modifier.height(10.dp)
                     )
                     Text(
-                        text = "1000 zł",
+                        text = "%.2f zł".format(balance),
                         style = TextStyle(
                             fontSize = 35.sp,
                         )
@@ -105,7 +138,7 @@ fun HomeScreen(navController: NavController){
                         modifier = Modifier.height(10.dp)
                     )
                     Text(
-                        text = "1000 zł",
+                        text = "%.2f zł".format(totalExpenses),
                         style = TextStyle(
                             fontSize = 35.sp,
                         )
@@ -148,7 +181,7 @@ fun HomeScreen(navController: NavController){
                         modifier = Modifier.height(10.dp)
                     )
                     Text(
-                        text = "1000 zł",
+                        text = "%.2f zł".format(totalIncome),
                         style = TextStyle(
                             fontSize = 35.sp,
                         )
@@ -161,7 +194,7 @@ fun HomeScreen(navController: NavController){
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Button(
-                            onClick = {},
+                            onClick = {navController.navigate("show_income")},
                             modifier = Modifier
                                 .fillMaxWidth()
                         ) {
@@ -170,15 +203,24 @@ fun HomeScreen(navController: NavController){
                     }
                 }
             }
+            Spacer(
+                modifier = Modifier.height(20.dp)
+            )
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 30.dp, end = 30.dp),
+                onClick = { viewModel.clearAllExpenses() }
+            ) {
+                Text("Reset bazy danych")
+            }
         }
-
-
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview(){
-    val fakeNavController = androidx.navigation.compose.rememberNavController()
-    HomeScreen(navController = fakeNavController)
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview(){
+//    val fakeNavController = androidx.navigation.compose.rememberNavController()
+//    HomeScreen(navController = fakeNavController)
+//}

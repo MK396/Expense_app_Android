@@ -46,9 +46,11 @@ fun AppNavigation(
     viewModel: MainViewModel,
 ) {
     NavHost(navController = navController, startDestination = "home") {
-        composable("home") { HomeScreen(navController) }
+        composable("home") { HomeScreen(navController, viewModel) }
         composable("add_expense") { AddExpenseScreen(viewModel) }
         composable("show_expense") { ExpenseScreen(viewModel) }
+        composable("show_income") { IncomeScreen(viewModel) }
+        composable("show_chart") { ChartScreen(navController, viewModel) }
     }
 }
 
