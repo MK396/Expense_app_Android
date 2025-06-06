@@ -3,6 +3,9 @@ package com.example.finanse
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
@@ -31,6 +35,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +45,106 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.finanse.data.Expense
+import java.time.LocalDate
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.*
+import androidx.compose.ui.unit.*
+import androidx.compose.ui.window.Popup
+import java.text.SimpleDateFormat
+import java.util.*
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerFieldToModal(
+    selectedDate: String,
+    onDateSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Przechowuj wybraną datę jako millis (Long)
+    var selectedDateMillis by remember {
+        mutableStateOf(selectedDate.toMillisOrNull())
+    }
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDateMillis)
+
+    Box(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = selectedDateMillis?.let { it.convertMillisToDate() } ?: "",
+            onValueChange = { },
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { showDatePicker = true }) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Wybierz datę"
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .clickable { showDatePicker = true }
+        )
+
+        if (showDatePicker) {
+            Popup(
+                onDismissRequest = { showDatePicker = false },
+                alignment = Alignment.TopStart
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Column {
+                        DatePicker(
+                            state = datePickerState,
+                            showModeToggle = false
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            TextButton(onClick = { showDatePicker = false }) {
+                                Text("Anuluj")
+                            }
+                            TextButton(onClick = {
+                                val millis = datePickerState.selectedDateMillis
+                                if (millis != null) {
+                                    selectedDateMillis = millis
+                                    onDateSelected(millis.convertMillisToDate(format = "dd.MM.yyyy"))
+                                }
+                                showDatePicker = false
+                            }) {
+                                Text("OK")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Pomocnicza funkcja: String 'dd.MM.yyyy' → millis
+fun String.toMillisOrNull(): Long? = try {
+    val sdf = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    sdf.parse(this)?.time
+} catch (_: Exception) { null }
+
+// Pomocnicza funkcja: millis → String 'dd.MM.yyyy'
+fun Long.convertMillisToDate(format: String = "dd.MM.yyyy"): String {
+    val formatter = SimpleDateFormat(format, Locale.getDefault())
+    return formatter.format(Date(this))
+}
+
+
 
 @Composable
 fun TypeMenu(typeValue: String, onTypeChange: (String) -> Unit, modifier: Modifier = Modifier) {
@@ -46,26 +152,33 @@ fun TypeMenu(typeValue: String, onTypeChange: (String) -> Unit, modifier: Modifi
 
     Box(
         modifier = modifier
-            .clickable { expanded = true }
-            .background(Color.White)
-            .padding(12.dp)
+            .fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = typeValue.ifEmpty { "Wybierz typ" })
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Rozwiń menu",
-                modifier = Modifier.size(24.dp)
-            )
-        }
+        OutlinedTextField(
+            value = typeValue.ifEmpty { "Wybierz typ" },
+            onValueChange = { /* readonly */ },
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = "Rozwiń menu"
+                    )
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .clickable { expanded = true }
+        )
 
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp)
+                .background(color = Color.White)
         ) {
             DropdownMenuItem(
                 text = { Text("Przychód") },
@@ -150,13 +263,13 @@ fun AddExpenseScreen(viewModel: MainViewModel){
                             .background(color = Color.White))
                     Spacer(modifier = Modifier.height(30.dp))
                     Text(text = "Data", fontSize = 20.sp)
-                    OutlinedTextField(
-                        value = dateValue,
-                        onValueChange = {dateValue = it},
+                    DatePickerFieldToModal(
+                        selectedDate = dateValue,
+                        onDateSelected = { dateValue = it },
                         modifier = Modifier
-                            .fillMaxWidth()
                             .padding(top = 10.dp)
-                            .background(color = Color.White))
+                            .background(color = Color.White)
+                    )
                     Spacer(modifier = Modifier.height(30.dp))
                     val context = LocalContext.current
                     Button(
