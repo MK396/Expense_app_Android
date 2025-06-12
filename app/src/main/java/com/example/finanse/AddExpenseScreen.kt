@@ -48,6 +48,7 @@ import com.example.finanse.data.Expense
 import java.time.LocalDate
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
@@ -55,6 +56,8 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Popup
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -156,7 +159,7 @@ fun TypeMenu(typeValue: String, onTypeChange: (String) -> Unit, modifier: Modifi
     ) {
         OutlinedTextField(
             value = typeValue.ifEmpty { "Wybierz typ" },
-            onValueChange = { /* readonly */ },
+            onValueChange = {  },
             readOnly = true,
             trailingIcon = {
                 IconButton(onClick = { expanded = true }) {
@@ -207,7 +210,10 @@ fun AddExpenseScreen(viewModel: MainViewModel){
     var dateValue by remember { mutableStateOf("") }
 
     Surface(modifier = Modifier.fillMaxSize()) {
-        Column() {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+        ) {
             Box(
                 modifier = Modifier
                     .height(60.dp)

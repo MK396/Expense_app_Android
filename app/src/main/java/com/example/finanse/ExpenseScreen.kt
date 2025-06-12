@@ -35,13 +35,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun ExpenseScreen(viewModel: MainViewModel) {
     // Pobieramy dane jako State z Flow
     val expenses by viewModel.allExpenses.collectAsState(initial = emptyList())
 
-    Column {
+    Column(
+    ) {
         Box(
             modifier = Modifier
                 .height(60.dp)
